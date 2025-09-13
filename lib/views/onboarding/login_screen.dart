@@ -149,14 +149,18 @@ class LoginScreen extends StatelessWidget {
       onPressed: () async {
         final success = await authController.login();
         if (success && context.mounted) {
-          // Navigate to home screen
+          // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Login successful!'),
               backgroundColor: AppColors.success,
             ),
           );
-          // TODO: Navigate to home screen
+          
+          // Navigate to main screen
+          if (context.mounted) {
+            Navigator.of(context).pushReplacementNamed('/main');
+          }
         } else if (authController.errorMessage != null && context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -204,7 +208,9 @@ class LoginScreen extends StatelessWidget {
                   backgroundColor: AppColors.success,
                 ),
               );
-              // TODO: Navigate to home screen
+              if (context.mounted) {
+                Navigator.of(context).pushReplacementNamed('/main');
+              }
             }
           },
           child: const Icon(
@@ -229,7 +235,9 @@ class LoginScreen extends StatelessWidget {
                   backgroundColor: AppColors.success,
                 ),
               );
-              // TODO: Navigate to home screen
+              if (context.mounted) {
+                Navigator.of(context).pushReplacementNamed('/main');
+              }
             }
           },
           child: const Text(

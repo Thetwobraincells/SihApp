@@ -41,6 +41,13 @@ class AuthController extends ChangeNotifier {
       if (email.isNotEmpty && password.isNotEmpty) {
         _isLoggedIn = true;
         _setLoading(false);
+        
+        // Clear the form after successful login
+        emailController.clear();
+        passwordController.clear();
+        
+        // Notify listeners to update the UI
+        notifyListeners();
         return true;
       } else {
         throw Exception('Invalid credentials');
