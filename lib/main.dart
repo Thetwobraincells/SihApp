@@ -1,6 +1,7 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'controllers/auth_controller.dart';
 import 'views/onboarding/login_screen.dart';
 import 'core/constants/app_colors.dart';
@@ -26,22 +27,23 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           primaryColor: AppColors.primaryBlue,
           scaffoldBackgroundColor: AppColors.white,
-          fontFamily: 'Roboto',
           visualDensity: VisualDensity.adaptivePlatformDensity,
-          // Configure the default text theme
-          textTheme: const TextTheme(
-            displayLarge: TextStyle(color: AppColors.darkBlue),
-            displayMedium: TextStyle(color: AppColors.darkBlue),
-            displaySmall: TextStyle(color: AppColors.darkBlue),
-            headlineLarge: TextStyle(color: AppColors.darkBlue),
-            headlineMedium: TextStyle(color: AppColors.darkBlue),
-            headlineSmall: TextStyle(color: AppColors.darkBlue),
-            titleLarge: TextStyle(color: AppColors.darkBlue),
-            titleMedium: TextStyle(color: AppColors.darkBlue),
-            titleSmall: TextStyle(color: AppColors.darkBlue),
-            bodyLarge: TextStyle(color: AppColors.darkBlue),
-            bodyMedium: TextStyle(color: AppColors.secondaryBlue),
-            bodySmall: TextStyle(color: AppColors.secondaryBlue),
+          // Configure the default text theme with Google Fonts
+          textTheme: GoogleFonts.robotoTextTheme(
+            const TextTheme(
+              displayLarge: TextStyle(color: AppColors.darkBlue),
+              displayMedium: TextStyle(color: AppColors.darkBlue),
+              displaySmall: TextStyle(color: AppColors.darkBlue),
+              headlineLarge: TextStyle(color: AppColors.darkBlue),
+              headlineMedium: TextStyle(color: AppColors.darkBlue),
+              headlineSmall: TextStyle(color: AppColors.darkBlue),
+              titleLarge: TextStyle(color: AppColors.darkBlue),
+              titleMedium: TextStyle(color: AppColors.darkBlue),
+              titleSmall: TextStyle(color: AppColors.darkBlue),
+              bodyLarge: TextStyle(color: AppColors.darkBlue),
+              bodyMedium: TextStyle(color: AppColors.secondaryBlue),
+              bodySmall: TextStyle(color: AppColors.secondaryBlue),
+            ),
           ),
           // Configure app bar theme
           appBarTheme: const AppBarTheme(
