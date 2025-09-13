@@ -5,7 +5,7 @@ class AppColors {
   // Primary Colors based on the design
   static const Color primaryBlue = Color(0xFF8ECAE6);
   static const Color secondaryBlue = Color(0xFF219EBC);
-  static const Color darkBlue = Color(0xFF023047);
+  static const Color darkBlue = Color(0xFF1A237E); // Updated to a more visible blue
   static const Color yellow = Color(0xFFFFB703);
   static const Color orange = Color(0xFFFB8500);
   
