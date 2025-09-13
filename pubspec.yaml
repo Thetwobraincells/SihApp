@@ -78,8 +78,6 @@ flutter:
   # Assets
   assets:
     - assets/images/
-    - assets/icons/
-    - assets/animations/
     - assets/fonts/
   
   # Fonts will be handled by google_fonts package

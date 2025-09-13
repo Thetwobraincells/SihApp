@@ -4,10 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/roadmap_controller.dart';
-import 'views/onboarding/login_screen.dart';
-import 'views/roadmap/clean_roadmap_screen.dart';
-import 'views/main_screen.dart';
+import 'views/main_screen.dart'; // For direct testing
 import 'core/constants/app_colors.dart';
+import 'routes/app_routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,12 +27,14 @@ class MyApp extends StatelessWidget {
         title: 'Career Compass',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          // Keep your existing Material 3 configuration
+          useMaterial3: true,
           primarySwatch: Colors.blue,
           primaryColor: AppColors.primaryBlue,
           scaffoldBackgroundColor: AppColors.white,
           visualDensity: VisualDensity.adaptivePlatformDensity,
           
-          // Configure the default text theme with Google Fonts
+          // Keep your existing Google Fonts configuration
           textTheme: GoogleFonts.robotoTextTheme(
             const TextTheme(
               displayLarge: TextStyle(color: AppColors.darkBlue),
@@ -51,7 +52,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
           
-          // Configure app bar theme
+          // Keep your existing app bar theme
           appBarTheme: const AppBarTheme(
             backgroundColor: AppColors.white,
             foregroundColor: AppColors.darkBlue,
@@ -59,7 +60,7 @@ class MyApp extends StatelessWidget {
             centerTitle: true,
           ),
           
-          // Configure elevated button theme
+          // Keep your existing elevated button theme
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.orange,
@@ -71,7 +72,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
           
-          // Configure input decoration theme
+          // Keep your existing input decoration theme
           inputDecorationTheme: InputDecorationTheme(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -89,33 +90,25 @@ class MyApp extends StatelessWidget {
             fillColor: AppColors.white,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
+          
+          // Add card theme for consistent styling
+          cardTheme: CardThemeData(
+            elevation: 0,
+            color: AppColors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            shadowColor: Colors.black.withOpacity(0.04),
+          ),
         ),
         
-        // For testing: Start directly with MainScreen
-        // In production, use the auth check below
+        // TEMPORARY: Start directly with MainScreen to test the Home page
+        // Comment this out once everything works and uncomment the lines below
         home: const MainScreen(),
         
-        // Production version with auth check:
-        // home: Consumer<AuthController>(
-        //   builder: (context, auth, _) {
-        //     return auth.isLoggedIn ? const MainScreen() : const LoginScreen();
-        //   },
-        // ),
-        
-        // Define app routes
-        routes: {
-          '/login': (context) => const LoginScreen(),
-          '/main': (context) => const MainScreen(),
-          '/roadmap': (context) => const CleanRoadmapScreen(),
-          // Add other routes as you create more screens
-        },
-        
-        // Handle unknown routes
-        onUnknownRoute: (settings) {
-          return MaterialPageRoute(
-            builder: (context) => const LoginScreen(),
-          );
-        },
+        // PRODUCTION: Use this once everything is working
+        // initialRoute: AppRoutes.splash,
+        // onGenerateRoute: AppRoutes.generateRoute,
       ),
     );
   }
