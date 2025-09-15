@@ -1,15 +1,17 @@
-﻿// lib/core/widgets/bottom_navigation.dart
+// lib/core/widgets/bottom_navigation.dart
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 
 class BottomNavItem {
   final String label;
   final IconData icon;
+  final IconData? activeIcon;
   final String route;
 
   const BottomNavItem({
     required this.label,
     required this.icon,
+    this.activeIcon,
     required this.route,
   });
 }
@@ -22,18 +24,21 @@ class AppBottomNavItems {
       route: '/home',
     ),
     BottomNavItem(
-      label: 'Roadmap',
-      icon: Icons.timeline_outlined,
-      route: '/roadmap',
+      label: 'Calendar',
+      icon: Icons.calendar_today_outlined,
+      activeIcon: Icons.calendar_today,
+      route: '/timeline',
     ),
     BottomNavItem(
-      label: 'Jobs',
-      icon: Icons.work_outline,
-      route: '/jobs',
+      label: 'Roadmap',
+      icon: Icons.assignment_outlined,
+      activeIcon: Icons.assignment,
+      route: '/roadmap',
     ),
     BottomNavItem(
       label: 'Profile',
       icon: Icons.person_outline,
+      activeIcon: Icons.person,
       route: '/profile',
     ),
   ];
@@ -75,6 +80,7 @@ class CustomBottomNavigation extends StatelessWidget {
       items: items.map((item) {
         return BottomNavigationBarItem(
           icon: Icon(item.icon),
+          activeIcon: item.activeIcon != null ? Icon(item.activeIcon) : Icon(item.icon),
           label: item.label,
         );
       }).toList(),

@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 import '../core/widgets/bottom_navigation.dart';
 import '../controllers/roadmap_controller.dart';
 import '../core/constants/app_colors.dart';
-import 'home_page.dart'; // Import the new home page
+import 'home_page.dart';
 import 'roadmap/clean_roadmap_screen.dart';
+import 'timeline/timeline_tracker_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -21,9 +22,9 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     _pages = [
-      const HomePage(), // Replace PlaceholderScreen with the new HomePage
+      const HomePage(),
+      const TimelineTrackerScreen(),
       const CleanRoadmapScreen(roadmapId: 'software_engineer'),
-      const PlaceholderScreen(title: 'Jobs'),
       const PlaceholderScreen(title: 'Profile'),
     ];
     
@@ -72,10 +73,10 @@ class _MainScreenState extends State<MainScreen> {
     switch (route) {
       case '/home':
         return 'Home';
+      case '/timeline':
+        return 'Timeline Tracker';
       case '/roadmap':
         return 'Career Roadmap';
-      case '/jobs':
-        return 'Job Opportunities';
       case '/profile':
         return 'My Profile';
       default:
