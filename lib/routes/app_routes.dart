@@ -4,6 +4,7 @@ import '../views/onboarding/login_screen.dart';
 import '../views/splash_screen.dart';
 import '../views/main_screen.dart';
 import '../views/roadmap/clean_roadmap_screen.dart';
+import '../views/college_finder/college_finder_screen.dart';
 
 class AppRoutes {
   // Route names
@@ -33,6 +34,8 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const MainScreen());
       case roadmap:
         return MaterialPageRoute(builder: (_) => const CleanRoadmapScreen());
+      case collegeFinder:
+        return MaterialPageRoute(builder: (_) => const CollegeFinderScreen());
       // Add other routes here as needed
       default:
         return MaterialPageRoute(

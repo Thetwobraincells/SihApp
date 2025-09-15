@@ -6,6 +6,7 @@ import '../core/constants/app_colors.dart';
 import 'home_page.dart';
 import 'roadmap/clean_roadmap_screen.dart';
 import 'timeline/timeline_tracker_screen.dart';
+import 'college_finder/college_finder_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -25,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
       const HomePage(),
       const TimelineTrackerScreen(),
       const CleanRoadmapScreen(roadmapId: 'software_engineer'),
-      const PlaceholderScreen(title: 'Profile'),
+      const CollegeFinderScreen(),
     ];
     
     // Initialize the roadmap data when the app starts

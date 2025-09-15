@@ -36,10 +36,10 @@ class AppBottomNavItems {
       route: '/roadmap',
     ),
     BottomNavItem(
-      label: 'Profile',
-      icon: Icons.person_outline,
-      activeIcon: Icons.person,
-      route: '/profile',
+      label: 'Colleges',
+      icon: Icons.school_outlined,
+      activeIcon: Icons.school,
+      route: '/colleges',
     ),
   ];
 
