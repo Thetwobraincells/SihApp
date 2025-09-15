@@ -56,7 +56,29 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
     );
   }
 
+  // FIXED: Proper Scaffold wrapper with Material context
   Widget _buildContent(RoadmapController controller) {
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      appBar: const CustomAppBar(
+        title: 'Career Roadmap',
+        showBackButton: true,
+        backgroundColor: AppColors.white,
+        foregroundColor: AppColors.darkBlue,
+      ),
+      body: SafeArea(
+        child: _buildBodyContent(controller),
+      ),
+      bottomNavigationBar: CustomBottomNavigation(
+        currentIndex: AppBottomNavItems.getRoadmapIndex(),
+        onTap: _onBottomNavTap,
+        items: AppBottomNavItems.mainNavItems,
+      ),
+    );
+  }
+
+  // FIXED: Separated body content for better organization
+  Widget _buildBodyContent(RoadmapController controller) {
     if (controller.isLoading) {
       return _buildLoadingState();
     }
@@ -96,6 +118,7 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
     );
   }
 
+  // FIXED: Explicit text decoration removal and proper Material context
   Widget _buildFieldHeader(RoadmapModel roadmap) {
     return Column(
       children: [
@@ -120,19 +143,26 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
           ),
         ),
         const SizedBox(height: 16),
+        // FIXED: Field title with explicit styling
         Text(
           roadmap.field,
           style: AppTextStyles.heading1.copyWith(
             fontSize: 28,
             color: AppColors.darkBlue,
+            decoration: TextDecoration.none, // Explicit removal
+            decorationColor: Colors.transparent,
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 4),
+        // FIXED: Grade text with explicit no decoration
         Text(
           roadmap.grade,
           style: AppTextStyles.bodyLarge.copyWith(
             color: AppColors.gray,
+            decoration: TextDecoration.none, // This removes the yellow underline
+            decorationColor: Colors.transparent,
+            decorationThickness: 0,
           ),
           textAlign: TextAlign.center,
         ),
@@ -163,6 +193,7 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
         style: AppTextStyles.bodyLarge.copyWith(
           fontWeight: FontWeight.w600,
           color: AppColors.darkBlue,
+          decoration: TextDecoration.none, // Ensure consistency
         ),
       ),
     );
@@ -184,6 +215,7 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
               'No jobs available yet',
               style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.secondaryBlue,
+                decoration: TextDecoration.none,
               ),
             ),
           ],
@@ -207,9 +239,17 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(),
+          CircularProgressIndicator(
+            color: AppColors.primaryBlue,
+          ),
           SizedBox(height: 16),
-          Text('Loading roadmap data...'),
+          Text(
+            'Loading roadmap data...',
+            style: TextStyle(
+              color: AppColors.darkBlue,
+              decoration: TextDecoration.none,
+            ),
+          ),
         ],
       ),
     );
@@ -232,13 +272,16 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
               'Oops! Something went wrong',
               style: AppTextStyles.heading2.copyWith(
                 color: AppColors.darkBlue,
+                decoration: TextDecoration.none,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               error,
-              style: AppTextStyles.bodyMedium,
+              style: AppTextStyles.bodyMedium.copyWith(
+                decoration: TextDecoration.none,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -255,7 +298,12 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text('Try Again'),
+              child: const Text(
+                'Try Again',
+                style: TextStyle(
+                  decoration: TextDecoration.none,
+                ),
+              ),
             ),
           ],
         ),
@@ -280,12 +328,15 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
               'No Roadmap Found',
               style: AppTextStyles.heading2.copyWith(
                 color: AppColors.darkBlue,
+                decoration: TextDecoration.none,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               'We couldn\'t find the roadmap you\'re looking for.',
-              style: AppTextStyles.bodyMedium,
+              style: AppTextStyles.bodyMedium.copyWith(
+                decoration: TextDecoration.none,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -304,7 +355,12 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
                   borderRadius: BorderRadius.circular(24),
                 ),
               ),
-              child: const Text('Go Back'),
+              child: const Text(
+                'Go Back',
+                style: TextStyle(
+                  decoration: TextDecoration.none,
+                ),
+              ),
             ),
           ],
         ),
@@ -343,6 +399,7 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: AppColors.darkBlue,
+                    decoration: TextDecoration.none,
                   ),
                 ),
                 IconButton(
@@ -378,6 +435,7 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.darkBlue,
+                decoration: TextDecoration.none,
               ),
             ),
             const SizedBox(height: 8.0),
@@ -387,6 +445,7 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
                 fontSize: 16,
                 color: AppColors.darkBlue,
                 height: 1.5,
+                decoration: TextDecoration.none,
               ),
             ),
             
@@ -399,6 +458,7 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.darkBlue,
+                decoration: TextDecoration.none,
               ),
             ),
             const SizedBox(height: 8.0),
@@ -408,7 +468,10 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
               children: job.requiredSkills.map((skill) => Chip(
                 label: Text(
                   skill,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    decoration: TextDecoration.none,
+                  ),
                 ),
                 backgroundColor: AppColors.primaryBlue,
               )).toList(),
@@ -442,6 +505,7 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
+                    decoration: TextDecoration.none,
                   ),
                 ),
               ),
@@ -471,6 +535,7 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
             style: const TextStyle(
               color: AppColors.darkBlue,
               fontWeight: FontWeight.w500,
+              decoration: TextDecoration.none,
             ),
           ),
         ],
