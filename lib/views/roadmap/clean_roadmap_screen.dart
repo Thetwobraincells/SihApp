@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_text_styles.dart';
 import '../../core/widgets/custom_app_bar.dart';
-import '../../core/widgets/bottom_navigation.dart';
 import '../../core/widgets/job_card.dart';
 import '../../core/widgets/job_card_shimmer.dart';
 import '../../controllers/roadmap_controller.dart';
@@ -37,16 +36,6 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
     _roadmapController.loadRoadmap(roadmapId);
   }
 
-  void _onBottomNavTap(int index) {
-    final selectedItem = AppBottomNavItems.mainNavItems[index];
-    
-    // Don't navigate if already on the current page
-    if (selectedItem.route == '/roadmap') return;
-    
-    // Use pushReplacementNamed to replace the current screen
-    Navigator.of(context).pushReplacementNamed(selectedItem.route);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<RoadmapController>(
@@ -56,28 +45,16 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
     );
   }
 
-  // FIXED: Proper Scaffold wrapper with Material context
+  // FIXED: Clean scaffold without duplicate navigation
   Widget _buildContent(RoadmapController controller) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: const CustomAppBar(
-        title: 'Career Roadmap',
-        showBackButton: true,
-        backgroundColor: AppColors.white,
-        foregroundColor: AppColors.darkBlue,
-      ),
       body: SafeArea(
         child: _buildBodyContent(controller),
-      ),
-      bottomNavigationBar: CustomBottomNavigation(
-        currentIndex: AppBottomNavItems.getRoadmapIndex(),
-        onTap: _onBottomNavTap,
-        items: AppBottomNavItems.mainNavItems,
       ),
     );
   }
 
-  // FIXED: Separated body content for better organization
   Widget _buildBodyContent(RoadmapController controller) {
     if (controller.isLoading) {
       return _buildLoadingState();
@@ -88,7 +65,6 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
     }
 
     if (controller.currentRoadmap == null) {
-      // If no roadmap is loaded, try to load it again
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _loadRoadmapData();
       });
@@ -118,7 +94,7 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
     );
   }
 
-  // FIXED: Explicit text decoration removal and proper Material context
+  // FIXED: Explicit text decoration removal to prevent yellow underline
   Widget _buildFieldHeader(RoadmapModel roadmap) {
     return Column(
       children: [
@@ -143,26 +119,22 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        // FIXED: Field title with explicit styling
         Text(
           roadmap.field,
           style: AppTextStyles.heading1.copyWith(
             fontSize: 28,
             color: AppColors.darkBlue,
-            decoration: TextDecoration.none, // Explicit removal
-            decorationColor: Colors.transparent,
+            decoration: TextDecoration.none,
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 4),
-        // FIXED: Grade text with explicit no decoration
         Text(
           roadmap.grade,
           style: AppTextStyles.bodyLarge.copyWith(
             color: AppColors.gray,
             decoration: TextDecoration.none, // This removes the yellow underline
             decorationColor: Colors.transparent,
-            decorationThickness: 0,
           ),
           textAlign: TextAlign.center,
         ),
@@ -193,7 +165,7 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
         style: AppTextStyles.bodyLarge.copyWith(
           fontWeight: FontWeight.w600,
           color: AppColors.darkBlue,
-          decoration: TextDecoration.none, // Ensure consistency
+          decoration: TextDecoration.none,
         ),
       ),
     );
@@ -298,69 +270,7 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
-                'Try Again',
-                style: TextStyle(
-                  decoration: TextDecoration.none,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.school_outlined,
-              size: 64,
-              color: AppColors.secondaryBlue.withOpacity(0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No Roadmap Found',
-              style: AppTextStyles.heading2.copyWith(
-                color: AppColors.darkBlue,
-                decoration: TextDecoration.none,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'We couldn\'t find the roadmap you\'re looking for.',
-              style: AppTextStyles.bodyMedium.copyWith(
-                decoration: TextDecoration.none,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.orange,
-                foregroundColor: AppColors.darkBlue,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
-              ),
-              child: const Text(
-                'Go Back',
-                style: TextStyle(
-                  decoration: TextDecoration.none,
-                ),
-              ),
+              child: const Text('Try Again'),
             ),
           ],
         ),
@@ -389,7 +299,6 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Header with close button
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -408,27 +317,15 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
                 ),
               ],
             ),
-            
             const SizedBox(height: 16.0),
-            
-            // Salary and Experience
             Row(
               children: [
-                _buildInfoChip(
-                  Icons.attach_money,
-                  job.salaryRange,
-                ),
+                _buildInfoChip(Icons.attach_money, job.salaryRange),
                 const SizedBox(width: 12.0),
-                _buildInfoChip(
-                  Icons.work_outline,
-                  job.experienceLevel,
-                ),
+                _buildInfoChip(Icons.work_outline, job.experienceLevel),
               ],
             ),
-            
             const SizedBox(height: 24.0),
-            
-            // Description
             const Text(
               'Job Description',
               style: TextStyle(
@@ -448,10 +345,7 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
                 decoration: TextDecoration.none,
               ),
             ),
-            
             const SizedBox(height: 24.0),
-            
-            // Required Skills
             const Text(
               'Required Skills',
               style: TextStyle(
@@ -476,10 +370,7 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
                 backgroundColor: AppColors.primaryBlue,
               )).toList(),
             ),
-            
             const SizedBox(height: 32.0),
-            
-            // Apply Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -510,7 +401,6 @@ class _CleanRoadmapScreenState extends State<CleanRoadmapScreen> {
                 ),
               ),
             ),
-            
             const SizedBox(height: 16.0),
           ],
         ),
