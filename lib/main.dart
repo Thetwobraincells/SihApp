@@ -1,4 +1,3 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -102,9 +101,13 @@ class MyApp extends StatelessWidget {
           ),
         ),
         
-        // TEMPORARY: Start directly with MainScreen to test the Home page
-        // Comment this out once everything works and uncomment the lines below
-        home: const MainScreen(),
+        // FIXED: Use the route system instead of direct home assignment
+        // This enables named route navigation to work properly
+        initialRoute: AppRoutes.main,  // Start with main screen
+        onGenerateRoute: AppRoutes.generateRoute,
+        
+        // REMOVED: Comment out the direct home assignment that was bypassing routes
+        // home: const MainScreen(),
         
         // PRODUCTION: Use this once everything is working
         // initialRoute: AppRoutes.splash,

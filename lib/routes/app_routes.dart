@@ -5,6 +5,7 @@ import '../views/splash_screen.dart';
 import '../views/main_screen.dart';
 import '../views/roadmap/clean_roadmap_screen.dart';
 import '../views/college_finder/college_finder_screen.dart';
+import '../views/profile_page.dart';
 
 class AppRoutes {
   // Route names
@@ -21,6 +22,7 @@ class AppRoutes {
   static const String timeline = '/timeline';
   static const String parentZone = '/parent-zone';
   static const String careerSwitch = '/career-switch';
+  static const String profile = '/profile';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -36,6 +38,8 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const CleanRoadmapScreen());
       case collegeFinder:
         return MaterialPageRoute(builder: (_) => const CollegeFinderScreen());
+      case profile:
+        return MaterialPageRoute(builder: (_) => const ProfilePage());
       // Add other routes here as needed
       default:
         return MaterialPageRoute(

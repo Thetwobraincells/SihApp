@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/constants/app_colors.dart';
+import '../routes/app_routes.dart';
 import 'roadmap/clean_roadmap_screen.dart';
 
 class HomePage extends StatelessWidget {
@@ -89,18 +90,28 @@ class HomePage extends StatelessWidget {
             ),
           ),
           
-          // User Avatar
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: AppColors.primaryBlue,
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: const Icon(
-              Icons.person,
-              color: AppColors.white,
-              size: 24,
+          // User Avatar - Now Clickable
+          GestureDetector(
+            onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppColors.primaryBlue,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primaryBlue.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.person,
+                color: AppColors.white,
+                size: 24,
+              ),
             ),
           ),
         ],
