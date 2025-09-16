@@ -255,7 +255,7 @@ class HomePage extends StatelessWidget {
           builder: (context, constraints) {
             // Responsive grid based on screen width
             int crossAxisCount = constraints.maxWidth > 600 ? 3 : 2;
-            double childAspectRatio = constraints.maxWidth > 600 ? 1.4 : 1.2;
+            double childAspectRatio = constraints.maxWidth > 600 ? 1.3 : 1.0;
             
             return GridView.count(
               shrinkWrap: true,
@@ -363,6 +363,8 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: AppColors.darkBlue,
@@ -376,6 +378,7 @@ class HomePage extends StatelessWidget {
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
+              softWrap: true,
             ),
           ],
         ),
@@ -525,10 +528,7 @@ class HomePage extends StatelessWidget {
   }
 
   void _navigateToTests(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const TestsPage()),
-    );
+    Navigator.pushNamed(context, AppRoutes.quiz);
   }
 
   void _navigateToAdvice(BuildContext context) {

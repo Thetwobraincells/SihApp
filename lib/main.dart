@@ -6,6 +6,7 @@ import 'controllers/roadmap_controller.dart';
 import 'views/main_screen.dart'; // For direct testing
 import 'core/constants/app_colors.dart';
 import 'routes/app_routes.dart';
+import 'controllers/quiz_controller.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController()),
         ChangeNotifierProvider(create: (_) => RoadmapController()),
+        ChangeNotifierProvider(create: (_) => QuizController()),
         // Add other providers here as needed
       ],
       child: MaterialApp(
