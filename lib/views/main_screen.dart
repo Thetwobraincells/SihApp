@@ -18,15 +18,19 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
   late final List<Widget> _pages;
+  late final PageController _pageController;
 
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: 0);
+    
+    // Create pages with proper tab context
     _pages = [
       const HomePage(),
       const TimelineTrackerScreen(),
       const CleanRoadmapScreen(roadmapId: 'software_engineer'),
-      const CollegeFinderScreen(),
+      const CollegeFinderScreen(isTab: true), // KEY FIX: Tell it it's a tab
     ];
     
     // Initialize the roadmap data when the app starts
@@ -36,30 +40,37 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _currentIndex = index;
     });
+    
+    // Animate to the selected page
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // Get the current route name based on the selected index
-    final currentRoute = AppBottomNavItems.mainNavItems[_currentIndex].route;
-    
     return Scaffold(
-      // Only show AppBar for non-home pages (Home page has its own header)
-      appBar: _currentIndex == 0 ? null : AppBar(
-        title: Text(
-          _getTitleForRoute(currentRoute),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: const Color(0xFF1E3A8A), // Dark blue color
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: IndexedStack(
-        index: _currentIndex,
+      // FIXED: Always show AppBar for consistency, but customize per screen
+      appBar: _buildAppBarForCurrentPage(),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
         children: _pages,
       ),
       bottomNavigationBar: CustomBottomNavigation(
@@ -70,16 +81,54 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
   
-  String _getTitleForRoute(String route) {
-    switch (route) {
-      case '/home':
+  PreferredSizeWidget? _buildAppBarForCurrentPage() {
+    // Home page manages its own header
+    if (_currentIndex == 0) {
+      return null;
+    }
+    
+    return AppBar(
+      title: Text(
+        _getTitleForIndex(_currentIndex),
+        style: const TextStyle(
+          color: Colors.white, 
+          fontWeight: FontWeight.w600,
+          fontSize: 18,
+        ),
+      ),
+      backgroundColor: const Color(0xFF1E3A8A),
+      elevation: 0,
+      centerTitle: true,
+      automaticallyImplyLeading: false, // KEY FIX: No back button for tabs
+      actions: _getActionsForCurrentPage(),
+    );
+  }
+  
+  List<Widget>? _getActionsForCurrentPage() {
+    // Add specific actions for College Finder tab
+    if (_currentIndex == 3) { // College Finder index
+      return [
+        IconButton(
+          icon: const Icon(Icons.bookmark_outline, color: Colors.white),
+          onPressed: () {
+            // Handle bookmark action
+          },
+        ),
+      ];
+    }
+    return null;
+  }
+  
+  String _getTitleForIndex(int index) {
+    switch (index) {
+      case 0:
         return 'Home';
-      case '/timeline':
+      case 1:
         return 'Timeline Tracker';
-      case '/roadmap':
+      case 2:
         return 'Career Roadmap';
-      case '/profile':
-        return 'My Profile';
+      case 3:
+        return 'Career Compass'; // Match your screenshot
       default:
         return 'Career Compass';
     }

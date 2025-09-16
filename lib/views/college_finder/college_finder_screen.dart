@@ -27,7 +27,9 @@ class College {
 }
 
 class CollegeFinderScreen extends StatefulWidget {
-  const CollegeFinderScreen({Key? key}) : super(key: key);
+  final bool isTab; // NEW: Parameter to control app bar behavior
+  
+  const CollegeFinderScreen({Key? key, this.isTab = false}) : super(key: key);
 
   @override
   State<CollegeFinderScreen> createState() => _CollegeFinderScreenState();
@@ -103,7 +105,8 @@ class _CollegeFinderScreenState extends State<CollegeFinderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.lightGray,
-      appBar: _buildAppBar(),
+      // FIXED: Only show AppBar if NOT a tab
+      appBar: widget.isTab ? null : _buildAppBar(),
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -162,7 +165,7 @@ class _CollegeFinderScreenState extends State<CollegeFinderScreen> {
     );
   }
 
-  // App Bar
+  // App Bar (only used when NOT a tab)
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       backgroundColor: AppColors.white,

@@ -11,6 +11,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color backgroundColor;
   final Color foregroundColor;
   final double elevation;
+  final bool automaticallyImplyLeading; // NEW: Control automatic leading
 
   const CustomAppBar({
     Key? key,
@@ -21,18 +22,24 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.backgroundColor = AppColors.darkBlue,
     this.foregroundColor = AppColors.primaryBlue,
     this.elevation = 0,
+    this.automaticallyImplyLeading = true, // NEW: Default behavior
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // FIXED: Check if we can actually pop before showing back button
+    final canPop = Navigator.of(context).canPop();
+    final shouldShowBackButton = showBackButton && canPop && automaticallyImplyLeading;
+
     return AppBar(
       backgroundColor: backgroundColor,
       foregroundColor: foregroundColor,
       elevation: elevation,
       centerTitle: true,
-      leading: showBackButton
+      automaticallyImplyLeading: false, // FIXED: Prevent automatic back button
+      leading: shouldShowBackButton
           ? IconButton(
-              onPressed: onBackPressed ?? () => Navigator.of(context).pop(),
+              onPressed: onBackPressed ?? () => _handleBackPress(context),
               icon: Container(
                 width: 40,
                 height: 40,
@@ -59,6 +66,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
+  // FIXED: Safe navigation back
+  void _handleBackPress(BuildContext context) {
+    if (Navigator.of(context).canPop()) {
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
@@ -74,6 +88,7 @@ class CustomSliverAppBar extends StatelessWidget {
   final double expandedHeight;
   final bool pinned;
   final bool floating;
+  final bool automaticallyImplyLeading; // NEW: Control automatic leading
 
   const CustomSliverAppBar({
     Key? key,
@@ -87,10 +102,15 @@ class CustomSliverAppBar extends StatelessWidget {
     this.expandedHeight = 120,
     this.pinned = true,
     this.floating = false,
+    this.automaticallyImplyLeading = true, // NEW: Default behavior
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // FIXED: Check if we can actually pop before showing back button
+    final canPop = Navigator.of(context).canPop();
+    final shouldShowBackButton = showBackButton && canPop && automaticallyImplyLeading;
+
     return SliverAppBar(
       backgroundColor: backgroundColor,
       foregroundColor: foregroundColor,
@@ -99,9 +119,10 @@ class CustomSliverAppBar extends StatelessWidget {
       pinned: pinned,
       floating: floating,
       expandedHeight: expandedHeight,
-      leading: showBackButton
+      automaticallyImplyLeading: false, // FIXED: Prevent automatic back button
+      leading: shouldShowBackButton
           ? IconButton(
-              onPressed: onBackPressed ?? () => Navigator.of(context).pop(),
+              onPressed: onBackPressed ?? () => _handleBackPress(context),
               icon: Container(
                 width: 40,
                 height: 40,
@@ -127,5 +148,12 @@ class CustomSliverAppBar extends StatelessWidget {
       actions: actions,
       flexibleSpace: flexibleSpace,
     );
+  }
+
+  // FIXED: Safe navigation back
+  void _handleBackPress(BuildContext context) {
+    if (Navigator.of(context).canPop()) {
+      Navigator.pop(context);
+    }
   }
 }
