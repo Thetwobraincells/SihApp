@@ -1,7 +1,9 @@
 // lib/controllers/auth_controller.dart
 import 'package:flutter/material.dart';
+import '../routes/app_routes.dart';
 
 class AuthController extends ChangeNotifier {
+  // Private fields
   bool _isLoading = false;
   String? _errorMessage;
   bool _isLoggedIn = false;
@@ -11,16 +13,109 @@ class AuthController extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get isLoggedIn => _isLoggedIn;
 
-  // Text controllers
+  // Login Form
+  final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  // Form key
-  final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
+  // Signup Form
+  final GlobalKey<FormState> signUpFormKey = GlobalKey<FormState>();
+  final TextEditingController signUpFirstNameController = TextEditingController();
+  final TextEditingController signUpLastNameController = TextEditingController();
+  final TextEditingController signUpEmailController = TextEditingController();
+  final TextEditingController signUpPhoneController = TextEditingController();
+  final TextEditingController signUpPasswordController = TextEditingController();
+  final TextEditingController signUpConfirmPasswordController = TextEditingController();
 
-  // Login method
+  // Private helper methods
+  void _setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
+
+  void _clearError() {
+    _errorMessage = null;
+    notifyListeners();
+  }
+
+  void _setError(String error) {
+    _errorMessage = error;
+    notifyListeners();
+  }
+
+  // Public methods
+  
+  // Login with email and password
   Future<bool> login() async {
-    if (!loginFormKey.currentState!.validate()) {
+    _setLoading(true);
+    _clearError();
+
+    try {
+      // Get the form values
+      final email = emailController.text.trim();
+      final password = passwordController.text;
+      
+      // Admin credentials check (bypasses form validation)
+      if (email == 'admin' && password == '1234') {
+        // Simulate API call delay
+        await Future.delayed(const Duration(milliseconds: 500));
+        _isLoggedIn = true;
+        _setLoading(false);
+        notifyListeners();
+        
+        // Navigate to main screen after successful login
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.of(AppRoutes.navigatorKey.currentContext!).pushNamedAndRemoveUntil(
+            AppRoutes.main,
+            (route) => false,
+          );
+        });
+        
+        return true;
+      }
+      
+      // Regular login validation for non-admin users
+      if (!loginFormKey.currentState!.validate()) {
+        _setLoading(false);
+        return false;
+      }
+      
+      // Simulate API call delay
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      // Regular user login logic
+      if (email.isNotEmpty && password.isNotEmpty) {
+        _isLoggedIn = true;
+        _setLoading(false);
+        notifyListeners();
+        
+        // Navigate to main screen after successful login
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.of(AppRoutes.navigatorKey.currentContext!).pushNamedAndRemoveUntil(
+            AppRoutes.main,
+            (route) => false,
+          );
+        });
+        
+        return true;
+      } else {
+        _setError('Please enter both email and password');
+        _setLoading(false);
+        return false;
+      }
+    } catch (e) {
+      _setError('An error occurred. Please try again.');
+      _setLoading(false);
+      return false;
+    } finally {
+      // Clear sensitive data
+      passwordController.clear();
+    }
+  }
+
+  // Sign up with email and password
+  Future<bool> signUp() async {
+    if (!signUpFormKey.currentState!.validate()) {
       return false;
     }
 
@@ -31,27 +126,18 @@ class AuthController extends ChangeNotifier {
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
       
-      // Here you would typically call your API service
-      // Example: await ApiService.login(email, password);
+      _isLoggedIn = true;
       
-      // For demo purposes, we'll simulate a successful login
-      final email = emailController.text;
-      final password = passwordController.text;
+      // Clear the form after successful signup
+      signUpFirstNameController.clear();
+      signUpLastNameController.clear();
+      signUpEmailController.clear();
+      signUpPhoneController.clear();
+      signUpPasswordController.clear();
+      signUpConfirmPasswordController.clear();
       
-      if (email.isNotEmpty && password.isNotEmpty) {
-        _isLoggedIn = true;
-        _setLoading(false);
-        
-        // Clear the form after successful login
-        emailController.clear();
-        passwordController.clear();
-        
-        // Notify listeners to update the UI
-        notifyListeners();
-        return true;
-      } else {
-        throw Exception('Invalid credentials');
-      }
+      _setLoading(false);
+      return true;
     } catch (e) {
       _setError(e.toString());
       _setLoading(false);
@@ -59,43 +145,22 @@ class AuthController extends ChangeNotifier {
     }
   }
 
+  // Social sign up methods
+  Future<bool> signUpWithGoogle() async {
+    return await _handleSocialSignIn('Google');
+  }
+
+  Future<bool> signUpWithFacebook() async {
+    return await _handleSocialSignIn('Facebook');
+  }
+
   // Social login methods
   Future<bool> loginWithGoogle() async {
-    _setLoading(true);
-    _clearError();
-
-    try {
-      // Simulate Google login
-      await Future.delayed(const Duration(seconds: 1));
-      
-      // Here you would implement Google Sign-In
-      _isLoggedIn = true;
-      _setLoading(false);
-      return true;
-    } catch (e) {
-      _setError('Google login failed');
-      _setLoading(false);
-      return false;
-    }
+    return await _handleSocialLogin('Google');
   }
 
   Future<bool> loginWithFacebook() async {
-    _setLoading(true);
-    _clearError();
-
-    try {
-      // Simulate Facebook login
-      await Future.delayed(const Duration(seconds: 1));
-      
-      // Here you would implement Facebook Sign-In
-      _isLoggedIn = true;
-      _setLoading(false);
-      return true;
-    } catch (e) {
-      _setError('Facebook login failed');
-      _setLoading(false);
-      return false;
-    }
+    return await _handleSocialLogin('Facebook');
   }
 
   // Forgot password
@@ -104,14 +169,11 @@ class AuthController extends ChangeNotifier {
     _clearError();
 
     try {
-      // Simulate forgot password API call
-      await Future.delayed(const Duration(seconds: 1));
-      
-      // Here you would call your forgot password API
+      await Future.delayed(const Duration(seconds: 2));
       _setLoading(false);
       return true;
     } catch (e) {
-      _setError('Failed to send reset email');
+      _setError('Failed to send password reset email: ${e.toString()}');
       _setLoading(false);
       return false;
     }
@@ -120,32 +182,67 @@ class AuthController extends ChangeNotifier {
   // Logout
   void logout() {
     _isLoggedIn = false;
+    _errorMessage = null;
+    _isLoading = false;
+    
+    // Clear all controllers
     emailController.clear();
     passwordController.clear();
+    signUpFirstNameController.clear();
+    signUpLastNameController.clear();
+    signUpEmailController.clear();
+    signUpPhoneController.clear();
+    signUpPasswordController.clear();
+    signUpConfirmPasswordController.clear();
+    
+    notifyListeners();
+  }
+
+  // Private helper methods for social auth
+  Future<bool> _handleSocialSignIn(String provider) async {
+    _setLoading(true);
     _clearError();
-    notifyListeners();
+
+    try {
+      await Future.delayed(const Duration(seconds: 2));
+      _isLoggedIn = true;
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError('Failed to sign in with $provider: ${e.toString()}');
+      _setLoading(false);
+      return false;
+    }
   }
 
-  // Private helper methods
-  void _setLoading(bool loading) {
-    _isLoading = loading;
-    notifyListeners();
-  }
+  Future<bool> _handleSocialLogin(String provider) async {
+    _setLoading(true);
+    _clearError();
 
-  void _setError(String error) {
-    _errorMessage = error;
-    notifyListeners();
-  }
-
-  void _clearError() {
-    _errorMessage = null;
-    notifyListeners();
+    try {
+      await Future.delayed(const Duration(seconds: 1));
+      _isLoggedIn = true;
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setError('$provider login failed: ${e.toString()}');
+      _setLoading(false);
+      return false;
+    }
   }
 
   @override
   void dispose() {
+    // Dispose all controllers
     emailController.dispose();
     passwordController.dispose();
+    signUpFirstNameController.dispose();
+    signUpLastNameController.dispose();
+    signUpEmailController.dispose();
+    signUpPhoneController.dispose();
+    signUpPasswordController.dispose();
+    signUpConfirmPasswordController.dispose();
+    
     super.dispose();
   }
 }

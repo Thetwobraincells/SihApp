@@ -7,6 +7,7 @@ import '../../core/utils/validators.dart';
 import '../../core/widgets/custom_button.dart';
 import '../../core/widgets/custom_textfield.dart';
 import '../../controllers/auth_controller.dart';
+import '../../routes/app_routes.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -144,30 +145,34 @@ class LoginScreen extends StatelessWidget {
 
   Widget _buildLoginButton(BuildContext context, AuthController authController) {
     return CustomButton(
-      text: 'Log In',
-      isLoading: authController.isLoading,
+      text: 'Login',
       onPressed: () async {
-        final success = await authController.login();
-        if (success && context.mounted) {
-          // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Login successful!'),
-              backgroundColor: AppColors.success,
-            ),
-          );
+        // Hide keyboard if it's open
+        FocusScope.of(context).unfocus();
+        
+        try {
+          // Try to login using the auth controller
+          await authController.login();
           
-          // Navigate to main screen
-          if (context.mounted) {
-            Navigator.of(context).pushReplacementNamed('/main');
+          // If there's an error message, show it
+          if (authController.errorMessage != null && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(authController.errorMessage!),
+                backgroundColor: AppColors.error,
+              ),
+            );
           }
-        } else if (authController.errorMessage != null && context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(authController.errorMessage!),
-              backgroundColor: AppColors.error,
-            ),
-          );
+        } catch (e) {
+          // Handle any unexpected errors
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('An error occurred. Please try again.'),
+                backgroundColor: AppColors.error,
+              ),
+            );
+          }
         }
       },
     );
@@ -266,13 +271,8 @@ class LoginScreen extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
-            // TODO: Navigate to sign up screen
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Navigate to Sign Up screen'),
-                backgroundColor: AppColors.info,
-              ),
-            );
+            // Navigate to sign up screen
+            Navigator.of(context).pushReplacementNamed('/signup');
           },
           child: Text(
             'Sign Up',

@@ -3,10 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/roadmap_controller.dart';
-import 'views/main_screen.dart'; // For direct testing
-import 'core/constants/app_colors.dart';
-import 'routes/app_routes.dart';
 import 'controllers/quiz_controller.dart';
+import 'routes/app_routes.dart';
+import 'core/constants/app_colors.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,20 +21,21 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthController()),
         ChangeNotifierProvider(create: (_) => RoadmapController()),
         ChangeNotifierProvider(create: (_) => QuizController()),
-        // Add other providers here as needed
       ],
       child: MaterialApp(
         title: 'Career Compass',
         debugShowCheckedModeBanner: false,
+        navigatorKey: AppRoutes.navigatorKey,
+        initialRoute: AppRoutes.splash,
+        onGenerateRoute: AppRoutes.generateRoute,
         theme: ThemeData(
-          // Keep your existing Material 3 configuration
           useMaterial3: true,
           primarySwatch: Colors.blue,
           primaryColor: AppColors.primaryBlue,
           scaffoldBackgroundColor: AppColors.white,
           visualDensity: VisualDensity.adaptivePlatformDensity,
           
-          // Keep your existing Google Fonts configuration
+          // Google Fonts configuration
           textTheme: GoogleFonts.robotoTextTheme(
             const TextTheme(
               displayLarge: TextStyle(color: AppColors.darkBlue),
@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
           
-          // Keep your existing app bar theme
+          // App bar theme
           appBarTheme: const AppBarTheme(
             backgroundColor: AppColors.white,
             foregroundColor: AppColors.darkBlue,
@@ -61,7 +61,7 @@ class MyApp extends StatelessWidget {
             centerTitle: true,
           ),
           
-          // Keep your existing elevated button theme
+          // Elevated button theme
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.orange,
@@ -70,10 +70,11 @@ class MyApp extends StatelessWidget {
                 borderRadius: BorderRadius.circular(28),
               ),
               elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
           ),
           
-          // Keep your existing input decoration theme
+          // Input decoration theme
           inputDecorationTheme: InputDecorationTheme(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -92,28 +93,33 @@ class MyApp extends StatelessWidget {
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
           
-          // Add card theme for consistent styling
+          // Card theme
           cardTheme: CardThemeData(
-            elevation: 0,
+            elevation: 2,
             color: AppColors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            shadowColor: Colors.black.withOpacity(0.04),
+            shadowColor: Colors.black.withOpacity(0.1),
+            margin: const EdgeInsets.all(8),
+            clipBehavior: Clip.antiAlias,
+          ),
+          
+          // Checkbox theme
+          checkboxTheme: CheckboxThemeData(
+            fillColor: MaterialStateProperty.resolveWith<Color>((states) {
+              if (states.contains(MaterialState.selected)) {
+                return AppColors.orange;
+              }
+              return AppColors.white;
+            }),
+            checkColor: MaterialStateProperty.all(AppColors.white),
+            overlayColor: MaterialStateProperty.all(AppColors.orange.withOpacity(0.1)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
           ),
         ),
-        
-        // FIXED: Use the route system instead of direct home assignment
-        // This enables named route navigation to work properly
-        initialRoute: AppRoutes.main,  // Start with main screen
-        onGenerateRoute: AppRoutes.generateRoute,
-        
-        // REMOVED: Comment out the direct home assignment that was bypassing routes
-        // home: const MainScreen(),
-        
-        // PRODUCTION: Use this once everything is working
-        // initialRoute: AppRoutes.splash,
-        // onGenerateRoute: AppRoutes.generateRoute,
       ),
     );
   }
