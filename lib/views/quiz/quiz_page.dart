@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../controllers/quiz_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/quiz_model.dart';
+import '../../routes/app_routes.dart';
 import 'quiz_result_page.dart';
 
 class QuizPage extends StatelessWidget {
@@ -73,6 +74,10 @@ class _QuizPageContent extends StatelessWidget {
       backgroundColor: AppColors.white,
       foregroundColor: AppColors.darkBlue,
       elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: AppColors.darkBlue),
+        onPressed: () => _showExitDialog(context),
+      ),
       title: Text(
         'Aptitude & Interest Quiz',
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -516,5 +521,67 @@ class _QuizPageContent extends StatelessWidget {
       // Go to next question
       controller.nextQuestion();
     }
+  }
+
+  void _showExitDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'Exit Quiz?',
+            style: TextStyle(
+              color: AppColors.darkBlue,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          content: const Text(
+            'Are you sure you want to exit the quiz? Your progress will be lost.',
+            style: TextStyle(
+              color: AppColors.secondaryBlue,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: AppColors.secondaryBlue,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                // Navigate to main screen instead of just popping
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.main,
+                  (route) => false,
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                foregroundColor: AppColors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Exit',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

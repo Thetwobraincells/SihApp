@@ -8,6 +8,7 @@ import '../views/college_finder/college_finder_screen.dart';
 import '../views/profile_page.dart';
 import '../views/quiz/quiz_page.dart';
 import '../views/quiz/quiz_result_page.dart';
+import '../views/quiz/roadmap_result_page.dart';
 
 class AppRoutes {
   // Route names
@@ -18,6 +19,7 @@ class AppRoutes {
   static const String registration = '/registration';
   static const String quiz = '/quiz';
   static const String quizResult = '/quiz-result';
+  static const String roadmapResult = '/roadmap-result';
   static const String collegeFinder = '/college-finder';
   static const String roadmap = '/roadmap';
   static const String roleModels = '/role-models';
@@ -41,6 +43,10 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const QuizPage());
       case quizResult:
         return MaterialPageRoute(builder: (_) => const QuizResultPage());
+      case roadmapResult:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final stream = args?['stream'] ?? 'Science';
+        return MaterialPageRoute(builder: (_) => RoadmapResultPage(stream: stream));
       case roadmap:
         return MaterialPageRoute(builder: (_) => const CleanRoadmapScreen());
       case collegeFinder:
