@@ -1,18 +1,36 @@
+// lib/views/quiz/quiz_result_page.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/quiz_controller.dart';
+import '../../controllers/roadmap_controller.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_text_styles.dart';
+import '../../core/widgets/custom_button.dart';
+import '../../core/widgets/roadmap_card.dart';
+import '../../core/widgets/college_card.dart';
+import '../../models/roadmap_model.dart';
 import '../main_screen.dart';
 import 'quiz_page.dart';
 import '../../routes/app_routes.dart';
 
-class QuizResultPage extends StatelessWidget {
+class QuizResultPage extends StatefulWidget {
   const QuizResultPage({Key? key}) : super(key: key);
 
   @override
+  State<QuizResultPage> createState() => _QuizResultPageState();
+}
+
+class _QuizResultPageState extends State<QuizResultPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Don't load roadmap data automatically - wait for user to click explore
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Consumer<QuizController>(
-      builder: (context, quizController, child) {
+    return Consumer2<QuizController, RoadmapController>(
+      builder: (context, quizController, roadmapController, child) {
         return Scaffold(
           backgroundColor: AppColors.white,
           body: SafeArea(
@@ -38,13 +56,12 @@ class QuizResultPage extends StatelessWidget {
                         
                         const SizedBox(height: 24),
                         
-                        // Score Breakdown
-                        _buildScoreBreakdown(context, quizController),
+                        // Career Roadmap Section removed - will be shown on dedicated page
                         
                         const SizedBox(height: 24),
                         
-                        // Next Steps
-                        _buildNextSteps(context, quizController),
+                        // Score Breakdown
+                        _buildScoreBreakdown(context, quizController),
                         
                         const SizedBox(height: 32),
                       ],
@@ -53,7 +70,7 @@ class QuizResultPage extends StatelessWidget {
                 ),
                 
                 // Action Buttons
-                _buildActionButtons(context, quizController),
+                _buildActionButtons(context, quizController, roadmapController),
               ],
             ),
           ),
@@ -103,7 +120,7 @@ class QuizResultPage extends StatelessWidget {
               children: [
                 Text(
                   'Quiz Completed!',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  style: AppTextStyles.heading2.copyWith(
                     color: AppColors.white,
                     fontWeight: FontWeight.w600,
                   ),
@@ -111,7 +128,7 @@ class QuizResultPage extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   'Your personalized results are ready',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  style: AppTextStyles.bodyMedium.copyWith(
                     color: AppColors.white.withOpacity(0.9),
                   ),
                 ),
@@ -181,7 +198,8 @@ class QuizResultPage extends StatelessWidget {
           
           Text(
             'Congratulations!',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            style: AppTextStyles.heading1.copyWith(
+              fontSize: 28,
               color: AppColors.darkBlue,
               fontWeight: FontWeight.bold,
             ),
@@ -191,7 +209,7 @@ class QuizResultPage extends StatelessWidget {
           
           Text(
             'You\'ve completed the aptitude and interest assessment',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            style: AppTextStyles.bodyLarge.copyWith(
               color: AppColors.secondaryBlue,
             ),
             textAlign: TextAlign.center,
@@ -242,7 +260,7 @@ class QuizResultPage extends StatelessWidget {
                   children: [
                     Text(
                       'Recommended Stream',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      style: AppTextStyles.bodyMedium.copyWith(
                         color: AppColors.secondaryBlue,
                         fontWeight: FontWeight.w500,
                       ),
@@ -250,7 +268,8 @@ class QuizResultPage extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       controller.recommendedStream,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      style: AppTextStyles.heading2.copyWith(
+                        fontSize: 24,
                         color: AppColors.darkBlue,
                         fontWeight: FontWeight.bold,
                       ),
@@ -265,7 +284,7 @@ class QuizResultPage extends StatelessWidget {
           
           Text(
             controller.getStreamDescription(controller.recommendedStream),
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            style: AppTextStyles.bodyLarge.copyWith(
               color: AppColors.secondaryBlue,
               height: 1.5,
             ),
@@ -295,6 +314,183 @@ class QuizResultPage extends StatelessWidget {
     );
   }
 
+  Widget _buildCareerRoadmapSection(BuildContext context, RoadmapController roadmapController) {
+    if (roadmapController.isLoading) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(40),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryBlue),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Loading career roadmap...',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.secondaryBlue,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (roadmapController.currentRoadmap == null || 
+        roadmapController.currentRoadmap!.roadmapSteps.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final roadmap = roadmapController.currentRoadmap!;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.map,
+                  color: AppColors.primaryBlue,
+                  size: 24,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  '${roadmap.field} Career Roadmap',
+                  style: AppTextStyles.heading2.copyWith(
+                    fontSize: 20,
+                    color: AppColors.darkBlue,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: roadmap.roadmapSteps.asMap().entries.map((entry) {
+                final index = entry.key;
+                final step = entry.value;
+                final isLast = index == roadmap.roadmapSteps.length - 1;
+                
+                return RoadmapCard(
+                  step: step,
+                  isLast: isLast,
+                );
+              }).toList(),
+            ),
+          ),
+          
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSuggestedCollegesSection(BuildContext context, RoadmapController roadmapController) {
+    if (roadmapController.isLoading) {
+      return const SizedBox.shrink();
+    }
+
+    if (roadmapController.currentRoadmap == null || 
+        roadmapController.currentRoadmap!.suggestedColleges.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final colleges = roadmapController.currentRoadmap!.suggestedColleges;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.school,
+                      color: AppColors.orange,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Recommended Colleges in Kashmir',
+                      style: AppTextStyles.heading2.copyWith(
+                        fontSize: 20,
+                        color: AppColors.darkBlue,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Government colleges in Ghawal district that align with your chosen field',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.secondaryBlue,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: colleges.map((college) => CollegeCard(
+                college: college,
+              )).toList(),
+            ),
+          ),
+          
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
   Widget _buildInfoSection(BuildContext context, String title, List<String> items, IconData icon) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -309,9 +505,10 @@ class QuizResultPage extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.darkBlue,
                 fontWeight: FontWeight.w600,
+                fontSize: 16,
               ),
             ),
           ],
@@ -330,7 +527,7 @@ class QuizResultPage extends StatelessWidget {
             ),
             child: Text(
               item,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.primaryBlue,
                 fontWeight: FontWeight.w500,
               ),
@@ -361,7 +558,8 @@ class QuizResultPage extends StatelessWidget {
         children: [
           Text(
             'Detailed Score Breakdown',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            style: AppTextStyles.heading2.copyWith(
+              fontSize: 18,
               color: AppColors.darkBlue,
               fontWeight: FontWeight.w600,
             ),
@@ -401,7 +599,7 @@ class QuizResultPage extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     stream,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    style: AppTextStyles.bodyMedium.copyWith(
                       color: AppColors.darkBlue,
                       fontWeight: FontWeight.w500,
                     ),
@@ -410,7 +608,7 @@ class QuizResultPage extends StatelessWidget {
               ),
               Text(
                 score.toString(),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                style: AppTextStyles.bodyMedium.copyWith(
                   color: AppColors.darkBlue,
                   fontWeight: FontWeight.w600,
                 ),
@@ -432,106 +630,7 @@ class QuizResultPage extends StatelessWidget {
     );
   }
 
-  Widget _buildNextSteps(BuildContext context, QuizController controller) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.primaryBlue.withOpacity(0.05),
-            AppColors.orange.withOpacity(0.05),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: AppColors.primaryBlue.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.lightbulb,
-                color: AppColors.orange,
-                size: 24,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'What\'s Next?',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: AppColors.darkBlue,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 16),
-          
-          ..._getNextSteps(controller.recommendedStream).map((step) => 
-            _buildNextStepItem(context, step)
-          ).toList(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNextStepItem(BuildContext context, Map<String, dynamic> step) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 24,
-            height: 24,
-            margin: const EdgeInsets.only(top: 2),
-            decoration: BoxDecoration(
-              color: step['color'].withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              step['icon'],
-              size: 14,
-              color: step['color'],
-            ),
-          ),
-          
-          const SizedBox(width: 12),
-          
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  step['title'],
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: AppColors.darkBlue,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  step['description'],
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.secondaryBlue,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButtons(BuildContext context, QuizController controller) {
+  Widget _buildActionButtons(BuildContext context, QuizController quizController, RoadmapController roadmapController) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -547,34 +646,13 @@ class QuizResultPage extends StatelessWidget {
       child: Column(
         children: [
           // Primary Action
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => _exploreRoadmap(context, controller.recommendedStream),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
-                foregroundColor: AppColors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                elevation: 0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.map, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Explore ${controller.recommendedStream} Roadmap',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          CustomButton(
+            text: 'Explore ${quizController.recommendedStream} Roadmap',
+            onPressed: () => _exploreFullRoadmap(context, quizController.recommendedStream),
+            backgroundColor: AppColors.primaryBlue,
+            textColor: AppColors.white,
+            height: 48,
+            icon: const Icon(Icons.map, size: 18, color: AppColors.white),
           ),
           
           const SizedBox(height: 12),
@@ -583,44 +661,24 @@ class QuizResultPage extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: OutlinedButton(
+                child: CustomOutlinedButton(
+                  text: 'Retake Quiz',
                   onPressed: () => _retakeQuiz(context),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.secondaryBlue,
-                    side: BorderSide(color: AppColors.gray.withOpacity(0.3)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                  child: Text(
-                    'Retake Quiz',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  borderColor: AppColors.gray.withOpacity(0.3),
+                  textColor: AppColors.secondaryBlue,
+                  height: 44,
                 ),
               ),
               
               const SizedBox(width: 12),
               
               Expanded(
-                child: OutlinedButton(
+                child: CustomOutlinedButton(
+                  text: 'Back to Home',
                   onPressed: () => _goToHome(context),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.secondaryBlue,
-                    side: BorderSide(color: AppColors.gray.withOpacity(0.3)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                  child: Text(
-                    'Back to Home',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  borderColor: AppColors.gray.withOpacity(0.3),
+                  textColor: AppColors.secondaryBlue,
+                  height: 44,
                 ),
               ),
             ],
@@ -661,40 +719,18 @@ class QuizResultPage extends StatelessWidget {
     }
   }
 
-  List<Map<String, dynamic>> _getNextSteps(String stream) {
-    return [
-      {
-        'title': 'Explore Career Roadmap',
-        'description': 'View detailed career paths and required skills for your stream',
-        'icon': Icons.map,
-        'color': AppColors.primaryBlue,
-      },
-      {
-        'title': 'Find Colleges',
-        'description': 'Discover colleges and courses that align with your interests',
-        'icon': Icons.school,
-        'color': AppColors.orange,
-      },
-      {
-        'title': 'Connect with Mentors',
-        'description': 'Get guidance from professionals in your field of interest',
-        'icon': Icons.people,
-        'color': const Color(0xFF9C27B0),
-      },
-    ];
-  }
-
   // Navigation methods
-  void _exploreRoadmap(BuildContext context, String stream) {
-    Navigator.pushAndRemoveUntil(
+  void _exploreFullRoadmap(BuildContext context, String stream) {
+    // Navigate to dedicated roadmap page
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(builder: (context) => const MainScreen()),
-      (route) => false,
+      AppRoutes.roadmapResult,
+      arguments: {'stream': stream},
     );
-    // You could add specific roadmap navigation here based on the stream
   }
 
   void _retakeQuiz(BuildContext context) {
+    // Navigate to quiz page without using the disposed controller
     Navigator.pushNamedAndRemoveUntil(
       context,
       AppRoutes.quiz,
